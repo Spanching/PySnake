@@ -2,6 +2,8 @@ import pygame
 import random
 
 pygame.init()
+pygame.font.init()
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
 class Snake:
     def __init__(self):
@@ -32,7 +34,6 @@ class Snake:
             self.blocks.pop(0)
         b = self.blocks[len(self.blocks)-1]
         self.blocks.append((b[0]+x, b[1]+y))
-        print(self.blocks)
 
     def collides(self):
         for i, b1 in enumerate(self.blocks,1):
@@ -51,6 +52,7 @@ class Snake:
                 return True
         return False
 
+
 class main:
 
     def __init__(self):
@@ -66,12 +68,18 @@ class main:
         self.offsetY = 50
         self.width = 800
         self.height = 700
+        self.points = 0
+        self.timer = 0
         pygame.display.set_caption('Snake')
 
     def main(self):
         run = True
         while(run):
             self.clock.tick(8)
+            self.timer += 1
+            if self.timer >= 230:
+                self.timer = 0
+                self.points+=1
             self.snake.move()
             if not(self.isfood):
                 self.food = self.getrndfood()
@@ -81,6 +89,7 @@ class main:
                 print("You Lost")
                 break
             if self.snake.eats(self.food):
+                self.points+=10
                 self.isfood = False
             self.draw(self.win)
             for event in pygame.event.get():
@@ -114,11 +123,13 @@ class main:
 
     def draw(self, win):
 
-        pygame.draw.rect(win, (0, 0, 0), (self.offsetX, self.offsetY, self.width, self.height), 0)
+        pygame.draw.rect(win, (0, 0, 0), (0, 0, 1000, 800), 0)
 
         # draw the outer line
         pygame.draw.rect(win, (128, 128, 128), (self.offsetX, self.offsetY, self.width, self.height), 1)
 
+        surfaceText = myfont.render("Score: "+str(self.points), False, (255,255,255))
+        win.blit(surfaceText, (self.offsetX, 10))
 
         # draw the grid
         for i in range(1,40):
@@ -130,12 +141,17 @@ class main:
         #draw the food
         pygame.draw.rect(win, (0,255,0), (self.offsetX+self.food[0]*self.pixelOfRect, self.offsetY+self.food[1]*self.pixelOfRect, self.pixelOfRect,self.pixelOfRect), 0)
 
-        # draw the snake
+
+        # draw snake
         for i, b in enumerate(self.snake.blocks):
             x = b[0]
             y = b[1]
             pygame.draw.rect(win, self.snake.color, (self.offsetX+x*self.pixelOfRect, self.offsetY+y*self.pixelOfRect, self.pixelOfRect, self.pixelOfRect), 0)
 
+
+    def textOnScreen(self, win, text):
+        surfaceText = myfont.render(text, False, (255,255,255))
+        win.blit(surfaceText, (500-surfaceText.get_width()/2, 400-surfaceText.get_height()))
 
 
 m = main()
