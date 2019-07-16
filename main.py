@@ -47,9 +47,10 @@ class Snake:
         return False
 
     def eats(self, food):
-        for b in self.blocks:
-            if b[0] == food[0] and b[1]== food[1]:
-                self.food.append(food)
+        for f in food:
+            b = self.blocks[len(self.blocks)-1]
+            if b[0] == f[0] and b[1]== f[1]:
+                self.food.append(f)
                 return True
         return False
 
@@ -76,7 +77,7 @@ class main:
     def reset(self):
         self.snake1 = Snake(20,20, (255,0,0))
         self.snake2 = Snake(20,30, (0,0,255))
-        self.food = (-1, -1)
+        self.food = []
         self.isfood = False
         self.points = 0
         self.timer = 0
@@ -184,7 +185,7 @@ class main:
             elif lost==2:
                 self.textOnScreen(self.win, "Player 2 lost the Game with "+ str(self.snake2.points) + " points against Player 1 with "+ str(self.snake1.points)+".")
             elif lost==3:
-                self.textOnScreen(self.win, "You both suck! 1. "+ str(self.snake2.points) + " 2: "+ str(self.snake1.points)+".")
+                self.textOnScreen(self.win, "You both suck! 1: "+ str(self.snake1.points) + " 2: "+ str(self.snake2.points)+".")
             else:
                 self.textOnScreen(self.win, "Pause")
             for event in pygame.event.get():
@@ -199,9 +200,10 @@ class main:
         pygame.quit()
 
     def getrndfood(self):
-        f = (random.randrange(40), random.randrange(35))
-        while f in self.snake2.blocks:
-            f = (random.randrange(40), random.randrange(35))
+        f = [(random.randrange(40), random.randrange(35)),(random.randrange(40), random.randrange(35)),(random.randrange(40), random.randrange(35)),(random.randrange(40), random.randrange(35)),(random.randrange(40), random.randrange(35))]
+        for foo in f:
+            while foo in self.snake2.blocks+self.snake1.blocks:
+                foo = (random.randrange(40), random.randrange(35))
         return f
 
     def draw(self, win):
@@ -222,7 +224,8 @@ class main:
             pygame.draw.line(win, (128, 128, 128), (self.offsetX, self.offsetY+i*self.pixelOfRect), (900, self.offsetY+i*self.pixelOfRect), 1)
 
         #draw the food
-        pygame.draw.rect(win, (0,255,0), (self.offsetX+self.food[0]*self.pixelOfRect, self.offsetY+self.food[1]*self.pixelOfRect, self.pixelOfRect,self.pixelOfRect), 0)
+        for f in self.food:
+            pygame.draw.rect(win, (0,255,0), (self.offsetX+f[0]*self.pixelOfRect, self.offsetY+f[1]*self.pixelOfRect, self.pixelOfRect,self.pixelOfRect), 0)
 
 
         # draw snake1
